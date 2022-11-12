@@ -1,6 +1,8 @@
 import os
 import json
 import time
+from unittest import result
+
 from common.utils import check_file, timestamp_to_string
 from common.error import UserExistsError, RoleError
 from common.consts import ROLES
@@ -83,7 +85,34 @@ class Base(object):
             f.write(json_data)
         return True
 
+    def __change_active(self, username):
+        users = self.__read_users()
+        user = users.get(username)
+        if not user:
+            return False
 
+        user['active'] = not user['active']
+        user['update_time'] = time.time()
+        users[username] = user
+
+        json_data = json.dumps(users)
+        with open(self.user_json, 'w') as f:
+            f.write(json_data)
+        return True
+
+
+    def __del__username(self, username):
+        users = self.__read_users()
+        user = users.get(username)
+        if not user:
+            return False
+
+        delete_user=users.pop(username)
+
+        json_data = json.dumps(users)
+        with open(self.user_json, 'w') as f:
+            f.write(json_data)
+        return delete_user
 
 
 if __name__ == '__main__':
@@ -94,9 +123,12 @@ if __name__ == '__main__':
     print(user_path)
 
     # base = Base(user_path, gift_path)
-    base = Base(user_json=user_path, gift_json=gift_path)  #
+    # base = Base(user_json=user_path, gift_json=gift_path)  #
 
     # base.write_user(username='001', role='admin')  # json文件提前要加{}
-    result = base.change_role(username='001', role='normal')
+    # result = base.change_role(username='001', role='normal')
 
+    # result=base.change_active(username='001')
+
+    # result=base.del__username(username='001')
     print(result)
