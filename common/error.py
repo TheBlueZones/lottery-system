@@ -21,3 +21,8 @@ class UserExistsError(Exception):
 class RoleError(Exception):
     def __init__(self, message):
         self.message = message
+
+
+class LevelError(Exception):
+    def __init__(self, message):
+        self.message = message

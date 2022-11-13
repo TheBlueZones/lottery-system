@@ -4,8 +4,8 @@ import time
 from unittest import result
 
 from common.utils import check_file, timestamp_to_string
-from common.error import UserExistsError, RoleError
-from common.consts import ROLES
+from common.error import UserExistsError, RoleError, LevelError
+from common.consts import ROLES, FIRSTLEVELS, SECONDLEVELS
 
 
 class Base(object):
@@ -100,19 +100,88 @@ class Base(object):
             f.write(json_data)
         return True
 
-
     def __del__username(self, username):
         users = self.__read_users()
         user = users.get(username)
         if not user:
             return False
 
-        delete_user=users.pop(username)
+        delete_user = users.pop(username)
 
         json_data = json.dumps(users)
         with open(self.user_json, 'w') as f:
             f.write(json_data)
         return delete_user
+
+    def __read_gifts(self):
+        with open(self.gift_json, 'r') as f:
+            data = json.loads(f.read())
+
+            return data
+
+    def init_gifts(self):
+        data = {
+            'level1': {
+                'level1': {},
+                'level2': {},
+                'level3': {}
+            },
+            'level2': {
+                'level1': {},
+                'level2': {},
+                'level3': {}
+            },
+            'level3': {
+                'level1': {},
+                'level2': {},
+                'level3': {}
+            },
+            'level4': {
+                'level1': {},
+                'level2': {},
+                'level3': {}
+            }
+        }
+
+        gifts = self.__read_gifts()
+        if len(gifts) != 0:
+            return False
+
+        json_data = json.dumps(data)
+        with open(self.gift_json, 'w') as f:
+            f.write(json_data)
+
+    def __write_gift(self, first_level, second_level, git_name, gift_count):
+
+            if first_level not in FIRSTLEVELS:
+                raise LevelError('firstlevel not exits')
+            if second_level not in SECONDLEVELS:
+                raise LevelError('secondlevel not exits')
+
+            gifts = self.__read_gifts()
+
+            current_gift_pool = gifts[first_level][second_level]
+
+            if gift_count <= 0:
+                return 'gift count must > 0'
+
+            if git_name in current_gift_pool:
+                current_gift_pool[git_name]['count'] = current_gift_pool[git_name]['count'] + gift_count
+            else:
+                current_gift_pool[git_name] = {
+                    'name': git_name,
+                    'count': gift_count
+                }
+
+
+            gifts[first_level][second_level] = current_gift_pool
+
+            json_data = json.dumps(gifts)
+            with open(self.gift_json, 'w') as f:
+                f.write(json_data)
+
+
+            return True
 
 
 if __name__ == '__main__':
@@ -123,7 +192,7 @@ if __name__ == '__main__':
     print(user_path)
 
     # base = Base(user_path, gift_path)
-    # base = Base(user_json=user_path, gift_json=gift_path)  #
+    base = Base(user_json=user_path, gift_json=gift_path)
 
     # base.write_user(username='001', role='admin')  # json文件提前要加{}
     # result = base.change_role(username='001', role='normal')
@@ -131,4 +200,8 @@ if __name__ == '__main__':
     # result=base.change_active(username='001')
 
     # result=base.del__username(username='001')
+
+    # result = base.read_gifts()
+    # result = base.init_gifts()
+    # result = base.write_gift(first_level='level1', second_level='level1', git_name='apple11', gift_count=10)
     print(result)
