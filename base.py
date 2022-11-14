@@ -55,9 +55,7 @@ class Base(object):
             user['username']: user
         })
 
-        json_user = json.dumps(users)
-        with open(self.user_json, 'w') as f:
-            f.write(json_user)  # 覆盖了
+        self.__save(users, self.user_json)
 
     def __change_role(self, username, role):
         users = self.__read_users()
@@ -80,9 +78,7 @@ class Base(object):
         user['update_time'] = time.time()
         users[username] = user
 
-        json_data = json.dumps(users)
-        with open(self.user_json, 'w') as f:
-            f.write(json_data)
+        self.__save(users, self.user_json)
         return True
 
     def __change_active(self, username):
@@ -95,9 +91,8 @@ class Base(object):
         user['update_time'] = time.time()
         users[username] = user
 
-        json_data = json.dumps(users)
-        with open(self.user_json, 'w') as f:
-            f.write(json_data)
+        self.__save(users, self.user_json)
+
         return True
 
     def __del__username(self, username):
@@ -108,9 +103,8 @@ class Base(object):
 
         delete_user = users.pop(username)
 
-        json_data = json.dumps(users)
-        with open(self.user_json, 'w') as f:
-            f.write(json_data)
+        self.__save(users, self.user_json)
+
         return delete_user
 
     def __read_gifts(self):
@@ -147,41 +141,40 @@ class Base(object):
         if len(gifts) != 0:
             return False
 
+        self.__save(data, self.gift_json)
+
+    def write_gift(self, first_level, second_level, git_name, gift_count):
+        if first_level not in FIRSTLEVELS:
+            raise LevelError('firstlevel not exits')
+        if second_level not in SECONDLEVELS:
+            raise LevelError('secondlevel not exits')
+
+        gifts = self.__read_gifts()
+
+        current_gift_pool = gifts[first_level][second_level]
+
+        if gift_count <= 0:
+            return 'gift count must > 0'
+
+        if git_name in current_gift_pool:
+            current_gift_pool[git_name]['count'] = current_gift_pool[git_name]['count'] + gift_count
+        else:
+            current_gift_pool[git_name] = {
+                'name': git_name,
+                'count': gift_count
+            }
+
+        gifts[first_level][second_level] = current_gift_pool
+
+        self.__save(gifts, self.gift_json)
+
+        return True
+
+    def __save(self, data, path):
         json_data = json.dumps(data)
-        with open(self.gift_json, 'w') as f:
+        with open(path, 'w') as f:
             f.write(json_data)
-
-    def __write_gift(self, first_level, second_level, git_name, gift_count):
-
-            if first_level not in FIRSTLEVELS:
-                raise LevelError('firstlevel not exits')
-            if second_level not in SECONDLEVELS:
-                raise LevelError('secondlevel not exits')
-
-            gifts = self.__read_gifts()
-
-            current_gift_pool = gifts[first_level][second_level]
-
-            if gift_count <= 0:
-                return 'gift count must > 0'
-
-            if git_name in current_gift_pool:
-                current_gift_pool[git_name]['count'] = current_gift_pool[git_name]['count'] + gift_count
-            else:
-                current_gift_pool[git_name] = {
-                    'name': git_name,
-                    'count': gift_count
-                }
-
-
-            gifts[first_level][second_level] = current_gift_pool
-
-            json_data = json.dumps(gifts)
-            with open(self.gift_json, 'w') as f:
-                f.write(json_data)
-
-
-            return True
+        return True
 
 
 if __name__ == '__main__':
@@ -203,5 +196,5 @@ if __name__ == '__main__':
 
     # result = base.read_gifts()
     # result = base.init_gifts()
-    # result = base.write_gift(first_level='level1', second_level='level1', git_name='apple11', gift_count=10)
+    # result = base.write_gift(first_level='level2', second_level='level1', git_name='apple11', gift_count=10)
     print(result)

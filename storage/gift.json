@@ -14,7 +14,12 @@
     "level3": {}
   },
   "level2": {
-    "level1": {},
+    "level1": {
+      "apple11": {
+        "name": "apple11",
+        "count": 10
+      }
+    },
     "level2": {},
     "level3": {}
   },
