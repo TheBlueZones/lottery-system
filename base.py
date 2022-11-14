@@ -4,8 +4,8 @@ import time
 from unittest import result
 
 from common.utils import check_file, timestamp_to_string
-from common.error import UserExistsError, RoleError, LevelError
-from common.consts import ROLES, FIRSTLEVELS, SECONDLEVELS
+from common.error import UserExistsError, RoleError, LevelError, ChangeError
+from common.consts import ROLES, FIRSTLEVELS, SECONDLEVELS,CHANGE
 
 
 class Base(object):
@@ -143,12 +143,13 @@ class Base(object):
 
         self.__save(data, self.gift_json)
 
-    def write_gift(self, first_level, second_level, git_name, gift_count):
+    def __write_gift(self, first_level, second_level, git_name, gift_count,chang):
         if first_level not in FIRSTLEVELS:
             raise LevelError('firstlevel not exits')
         if second_level not in SECONDLEVELS:
             raise LevelError('secondlevel not exits')
-
+        if chang not in CHANGE:
+            raise ChangeError('change not exits,support only add , reduce or delete')
         gifts = self.__read_gifts()
 
         current_gift_pool = gifts[first_level][second_level]
@@ -157,12 +158,24 @@ class Base(object):
             return 'gift count must > 0'
 
         if git_name in current_gift_pool:
-            current_gift_pool[git_name]['count'] = current_gift_pool[git_name]['count'] + gift_count
+            if chang == 'add':
+                current_gift_pool[git_name]['count'] += gift_count
+            elif chang == 'reduce':
+                if current_gift_pool[git_name]['count'] - gift_count < 0:
+                    return 'reduce count must < current count'
+                current_gift_pool[git_name]['count'] -= gift_count
+            elif chang == 'delete':
+                current_gift_pool.pop(git_name)
         else:
-            current_gift_pool[git_name] = {
-                'name': git_name,
-                'count': gift_count
-            }
+            if chang == 'add':
+                current_gift_pool[git_name] = {
+                    'name': git_name,
+                    'count': gift_count
+                }
+            elif chang == 'reduce':
+                return 'gift name not exits'
+            elif chang == 'delete':
+                return 'gift name not exits'
 
         gifts[first_level][second_level] = current_gift_pool
 
