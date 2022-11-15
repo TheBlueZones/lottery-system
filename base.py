@@ -5,7 +5,7 @@ from unittest import result
 
 from common.utils import check_file, timestamp_to_string
 from common.error import UserExistsError, RoleError, LevelError, ChangeError
-from common.consts import ROLES, FIRSTLEVELS, SECONDLEVELS,CHANGE
+from common.consts import ROLES, FIRSTLEVELS, SECONDLEVELS, CHANGE
 
 
 class Base(object):
@@ -143,7 +143,7 @@ class Base(object):
 
         self.__save(data, self.gift_json)
 
-    def __write_gift(self, first_level, second_level, git_name, gift_count,chang):
+    def write_gift(self, first_level, second_level, git_name, gift_count, chang):
         if first_level not in FIRSTLEVELS:
             raise LevelError('firstlevel not exits')
         if second_level not in SECONDLEVELS:
@@ -200,7 +200,7 @@ if __name__ == '__main__':
     # base = Base(user_path, gift_path)
     base = Base(user_json=user_path, gift_json=gift_path)
 
-    # base.write_user(username='001', role='admin')  # json文件提前要加{}
+    base.write_user(username='001', role='admin')  # json文件提前要加{}
     # result = base.change_role(username='001', role='normal')
 
     # result=base.change_active(username='001')
@@ -209,5 +209,5 @@ if __name__ == '__main__':
 
     # result = base.read_gifts()
     # result = base.init_gifts()
-    # result = base.write_gift(first_level='level2', second_level='level1', git_name='apple11', gift_count=10)
+    # result = base.write_gift(first_level='level2', second_level='level1', git_name='apple11', gift_count=10,chang='reduce')
     print(result)
