@@ -143,12 +143,12 @@ class Base(object):
 
         self.__save(data, self.gift_json)
 
-    def write_gift(self, first_level, second_level, git_name, gift_count, chang):
+    def __write_gift(self, first_level, second_level, gift_name, gift_count, change):
         if first_level not in FIRSTLEVELS:
             raise LevelError('firstlevel not exits')
         if second_level not in SECONDLEVELS:
             raise LevelError('secondlevel not exits')
-        if chang not in CHANGE:
+        if change not in CHANGE:
             raise ChangeError('change not exits,support only add , reduce or delete')
         gifts = self.__read_gifts()
 
@@ -157,24 +157,24 @@ class Base(object):
         if gift_count <= 0:
             return 'gift count must > 0'
 
-        if git_name in current_gift_pool:
-            if chang == 'add':
-                current_gift_pool[git_name]['count'] += gift_count
-            elif chang == 'reduce':
-                if current_gift_pool[git_name]['count'] - gift_count < 0:
+        if gift_name in current_gift_pool:
+            if change == 'add':
+                current_gift_pool[gift_name]['count'] += gift_count
+            elif change == 'reduce':
+                if current_gift_pool[gift_name]['count'] - gift_count < 0:
                     return 'reduce count must < current count'
-                current_gift_pool[git_name]['count'] -= gift_count
-            elif chang == 'delete':
-                current_gift_pool.pop(git_name)
+                current_gift_pool[gift_name]['count'] -= gift_count
+            elif change == 'delete':
+                current_gift_pool.pop(gift_name)
         else:
-            if chang == 'add':
-                current_gift_pool[git_name] = {
-                    'name': git_name,
+            if change == 'add':
+                current_gift_pool[gift_name] = {
+                    'name': gift_name,
                     'count': gift_count
                 }
-            elif chang == 'reduce':
+            elif change == 'reduce':
                 return 'gift name not exits'
-            elif chang == 'delete':
+            elif change == 'delete':
                 return 'gift name not exits'
 
         gifts[first_level][second_level] = current_gift_pool
@@ -209,5 +209,5 @@ if __name__ == '__main__':
 
     # result = base.read_gifts()
     # result = base.init_gifts()
-    # result = base.write_gift(first_level='level2', second_level='level1', git_name='apple11', gift_count=10,chang='reduce')
+    # result = base.write_gift(first_level='level2', second_level='level1', gift_name='apple11', gift_count=10,chang='reduce')
     print(result)

@@ -6,5 +6,9 @@ temp = {
     "gifts": []
 }
 
-print(temp.get("username"))
-print(temp)
+# print(temp.get("username"))
+
+gift_names = []
+for k, _ in temp.items():
+    print(k)
+    print(_)

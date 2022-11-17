@@ -1,15 +1,17 @@
 {
   "001": {
     "username": "001",
-    "role": "admin",
+    "role": "normal",
     "active": true,
     "create_time": 1668431580.5632823,
     "update_time": 1668431580.5632823,
-    "gifts": []
+    "gifts": [
+      "apple11"
+    ]
   },
   "002": {
     "username": "002",
-    "role": "normals",
+    "role": "normal",
     "active": false,
     "create_time": 1668516944.942147,
     "update_time": 1668517251.8597796,
